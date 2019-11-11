@@ -2,12 +2,143 @@
 
 exports[`renders without crashing 1`] = `
 <div>
-  <div>
-    <h1
-      class="bg-black text-white"
+  <main>
+    <header
+      class="sm:flex sm:justify-between p-5"
     >
-      Testing
-    </h1>
-  </div>
+      <div
+        class="mb-4 sm:mb-0 sm:order-2"
+      >
+        <button
+          class="block w-full uppercase text-lg border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white py-1 sm:px-10"
+        >
+          Upload
+        </button>
+      </div>
+      <form
+        class="sm:order-1"
+      >
+        <input
+          class="border text-lg w-full px-4 py-1"
+          placeholder="Search documents…"
+          type="search"
+        />
+      </form>
+    </header>
+    <section
+      class="px-5 pb-5"
+    >
+      <header
+        class="md:flex justify-between items-baseline mb-5"
+      >
+        <h1
+          class="text-3xl md:text-4xl lg:text-5xl"
+        >
+          3
+           documents
+        </h1>
+        <div
+          class="text-lg"
+        >
+          Total size: 
+          8.35mb
+        </div>
+      </header>
+      <section
+        class="flex flex-wrap -mx-2"
+      >
+        <article
+          class="w-full sm:w-1/2 md:w-1/3 px-2 pb-4"
+        >
+          <div
+            class="border p-4 h-full"
+          >
+            <h2
+              class="text-2xl mb-2"
+            >
+              filename
+            </h2>
+            <div
+              class="flex justify-between items-baseline"
+            >
+              <div
+                class="mr-4"
+              >
+                18kb
+              </div>
+              <div>
+                <button
+                  class="text-sm border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white py-1 px-4"
+                  type="button"
+                >
+                  delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article
+          class="w-full sm:w-1/2 md:w-1/3 px-2 pb-4"
+        >
+          <div
+            class="border p-4 h-full"
+          >
+            <h2
+              class="text-2xl mb-2"
+            >
+              other
+            </h2>
+            <div
+              class="flex justify-between items-baseline"
+            >
+              <div
+                class="mr-4"
+              >
+                643.31kb
+              </div>
+              <div>
+                <button
+                  class="text-sm border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white py-1 px-4"
+                  type="button"
+                >
+                  delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article
+          class="w-full sm:w-1/2 md:w-1/3 px-2 pb-4"
+        >
+          <div
+            class="border p-4 h-full"
+          >
+            <h2
+              class="text-2xl mb-2"
+            >
+              third
+            </h2>
+            <div
+              class="flex justify-between items-baseline"
+            >
+              <div
+                class="mr-4"
+              >
+                7.7mb
+              </div>
+              <div>
+                <button
+                  class="text-sm border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white py-1 px-4"
+                  type="button"
+                >
+                  delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
 </div>
 `;
