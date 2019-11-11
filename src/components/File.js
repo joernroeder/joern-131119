@@ -1,6 +1,6 @@
 import React from 'react'
-
-const File = () => {
+import PropTypes from 'prop-types'
+const File = ({ id, name, size }) => {
   return (
     <article className="w-full sm:w-1/2 md:w-1/3 px-2 pb-4">
       <div className="border p-4 h-full">
@@ -19,6 +19,12 @@ const File = () => {
       </div>
     </article>
   )
+}
+
+File.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired,
 }
 
 export default File
