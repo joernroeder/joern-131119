@@ -28,17 +28,18 @@ const upload = multer({
   fileFilter: fileFilter,
 })
 
+// TODO what about overriding files?
 const UploadFilesHandler = (req, res) => {
   upload.single('file')(req, res, (err) => {
     if (err) {
-      return res.status(500).send(formatError(err))
+      return res.status(400).send(formatError(err))
     }
 
     console.log(req.file)
     const { path } = req.file
     console.log(path)
 
-    return res.send({ data: formatFile(FileFactory.create(path)) })
+    return res.status(201).send({ data: formatFile(FileFactory.create(path)) })
   })
 }
 

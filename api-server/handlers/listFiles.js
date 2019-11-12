@@ -39,7 +39,9 @@ const ListFilesHandler = (req, res) => {
     })
 
     const filteredFiles = query
-      ? files.filter(({ name }) => name.includes(query))
+      ? files.filter(({ name }) =>
+          name.toLowerCase().includes(query.toLowerCase())
+        )
       : allowedFiles
 
     return res.json(
