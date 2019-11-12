@@ -1,5 +1,6 @@
-import { useReducer, useEffect, useState, useRef } from 'react'
+import { useReducer, useState } from 'react'
 import axios, { CancelToken } from 'axios'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 const axiosInstance = axios.create({
   // TODO get from config or env
@@ -154,7 +155,7 @@ const useApi = (requestOpts, opts) => {
     setRefreshIndex(refreshIndex + 1)
   }
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // @see https://github.com/axios/axios#cancellation
     const source = CancelToken.source()
 
