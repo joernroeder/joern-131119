@@ -1,17 +1,18 @@
 import React from 'react'
-import '@testing-library/jest-dom/extend-expect'
-import { render } from '@testing-library/react'
+import { renderWithApiAndFileProviders } from 'test-utils'
 
 import AppHeader from './AppHeader'
 
-test('upload button should exist', () => {
-  const { queryByText } = render(<AppHeader />)
+test('upload button should exist', async () => {
+  const { queryByText } = renderWithApiAndFileProviders(<AppHeader />)
 
   expect(queryByText('Upload')).toBeInTheDocument()
 })
 
-test('search field should exist', () => {
-  const { queryByPlaceholderText } = render(<AppHeader />)
+test('search field should exist', async () => {
+  const { queryByPlaceholderText } = renderWithApiAndFileProviders(
+    <AppHeader />
+  )
 
   expect(queryByPlaceholderText(/Search documents/)).toBeInTheDocument()
 })
