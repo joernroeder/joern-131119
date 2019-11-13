@@ -8,7 +8,7 @@ const Actions = {
 }
 
 const initialState = {
-  filteredFiles: [],
+  filteredFileIds: [],
   query: '',
   isActive: false,
 }
@@ -20,7 +20,7 @@ const filteredFileReducer = (state, action) => {
     case Actions.SET_FILTER: {
       const { query, filteredFiles } = payload
 
-      const validFilteredFiles = filteredFiles.reduce(
+      const validFilteredFileIds = filteredFiles.reduce(
         (accumulator, candidate) => {
           if (!isValidFile(candidate)) {
             return accumulator
@@ -33,7 +33,7 @@ const filteredFileReducer = (state, action) => {
 
       return {
         ...state,
-        filteredFiles: validFilteredFiles,
+        filteredFileIds: validFilteredFileIds,
         query,
         isActive: true,
       }
@@ -52,7 +52,27 @@ const filteredFileReducer = (state, action) => {
 const FilteredFilesStateContext = createContext(undefined)
 const FilteredFilesDispatchContext = createContext(undefined)
 
-// todo documentation
+const getFilteredFiles = (filteredIds, files) => {
+  return filteredIds.reduce((accumulator, filteredFile) => {
+    const { id: filteredId } = filteredFile
+
+    const foundFile = files.find((file) => {
+      const { id: fileId } = file
+
+      return filteredId === fileId
+    })
+
+    console.log(foundFile)
+
+    if (!foundFile) {
+      return accumulator
+    }
+
+    return [...accumulator, foundFile]
+  }, [])
+}
+
+// TODO documentation
 const FilteredFilesProvider = ({ children }) => {
   const { files } = useFilesState()
   const [filteredState, dispatch] = useReducer(
@@ -61,7 +81,9 @@ const FilteredFilesProvider = ({ children }) => {
   )
 
   const filteredFiles = {
-    files: filteredState.isActive ? filteredState.filteredFiles : files,
+    files: filteredState.isActive
+      ? getFilteredFiles(filteredState.filteredFileIds, files)
+      : files,
     isActive: filteredState.isActive,
     query: filteredState.query,
   }
