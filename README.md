@@ -24,8 +24,7 @@ yarn start
 
 Navigate to [http://localhost:3000](http://localhost:3000)
 
-Due to tailwinds file watcher, which gets started in a second process the initial load might be a blank screen.
-Reload any your're good to go.
+Due to tailwinds file watcher, which gets started in a second process and sometimes takes a while, the browser might load be a blank screen initially. Simply reload any your're good to go.
 
 ### Testing
 
