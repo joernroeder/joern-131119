@@ -56,7 +56,6 @@ const FileUpload = (props) => {
       throw new Error('The given file type is not allowed.')
     }
 
-    console.log('file.size, maxFileSize', file.size, maxFileSize)
     if (file.size > maxFileSize) {
       throw new Error('The given file is to large.')
     }
@@ -66,7 +65,6 @@ const FileUpload = (props) => {
 
   const handleInputChange = (event) => {
     const { files } = event.target
-
     const [file] = files
 
     if (!file) {

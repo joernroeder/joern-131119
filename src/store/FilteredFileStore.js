@@ -20,6 +20,10 @@ const filteredFileReducer = (state, action) => {
     case Actions.SET_FILTER: {
       const { query, filteredFiles } = payload
 
+      if (!filteredFiles) {
+        return state
+      }
+
       const validFilteredFileIds = filteredFiles.reduce(
         (accumulator, candidate) => {
           if (!isValidFile(candidate)) {

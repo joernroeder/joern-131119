@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import useReadableFileSize from '../hooks/format/useReadableFileSize'
-import useApi, { RequestStatus } from '../../useApi'
 
 import { Actions, useFilesDispatch } from '../store/FileStore'
 import { useFilteredFilesState } from '../store/FilteredFileStore'
@@ -73,7 +72,11 @@ const FilesList = () => {
     const { id, attributes } = file
     const { name, size } = attributes
 
-    return <File key={id} id={id} name={name} size={size} />
+    try {
+      return <File key={id} id={id} name={name} size={size} />
+    } catch (error) {
+      return null
+    }
   })
 
   // render based on api response
@@ -109,7 +112,11 @@ const FilesList = () => {
       </header>
 
       <section className="flex flex-wrap -mx-2">
-        {files.length ? fileComponents : <div className="">Nothing here.</div>}
+        {files.length ? (
+          fileComponents
+        ) : (
+          <div className="mx-2">Nothing here.</div>
+        )}
       </section>
     </section>
   )

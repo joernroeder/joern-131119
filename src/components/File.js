@@ -35,7 +35,6 @@ const File = ({ id, name, size }) => {
           if (isCanceled) {
             return
           }
-          console.log(file)
 
           dispatch({ type: Actions.DELETE_FILE, payload: { id } })
           setStatus(ApiStatus.SUCCESS)
