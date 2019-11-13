@@ -2,7 +2,13 @@ module.exports = {
   theme: {
     extend: {},
   },
-  variants: {},
+  variants: {
+    backgroundColor: ['hover', 'focus', 'disabled'],
+    textColor: ['hover', 'focus', 'disabled'],
+  },
+  corePlugins: {
+    container: false,
+  },
   plugins: [
     function({ addComponents }) {
       addComponents({
