@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react'
+import { useReducer, useState, useCallback } from 'react'
 import axios, { CancelToken } from 'axios'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
@@ -72,7 +72,7 @@ const defaultRequestOptions = {
 
 const defaultOptions = {
   onSuccess: () => {},
-  //onError: () => {},
+  onError: () => {},
   loadImmediately: true,
 }
 
@@ -151,9 +151,9 @@ const useApi = (requestOpts, opts) => {
     status: loadImmediately ? RequestStatus.LOADING : undefined,
   })
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     setRefreshIndex(refreshIndex + 1)
-  }
+  }, [refreshIndex])
 
   useDeepCompareEffect(() => {
     // @see https://github.com/axios/axios#cancellation
@@ -163,7 +163,8 @@ const useApi = (requestOpts, opts) => {
       dispatch({ type: FETCH_START })
 
       try {
-        await timeout(1000)
+        //await timeout(1000)
+        console.log('testing1')
         const { data: response } = await axiosInstance({
           ...requestOptions,
           cancelToken: source.token,
