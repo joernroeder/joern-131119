@@ -33,8 +33,26 @@ Run tests via `yarn test` or get a coverage report via `yarn coverage`. You'll f
 ## Security
 
 // List security concerns:
-// - that have been addressed
-// - that have _not_ been addressed
+
+User input, as well as potential malicious API responses are a potential security concern.
+
+### that have been addressed
+
+- No direct injecting of values into the DOM.
+- No spreading of props
+- No `dangerouslySetInnerHTML`
+- Explicit
+- urlEncoding for user queries (during search/filtering) as well as file during file removal.
+- Validation of format of individual props once received from the API and put into the central FileStore
+
+### that have _not_ been addressed
+
+- Full JSON Schema validation for incoming requests. It is still possible to send additional fields.
+- Content Security Policy
+- X-XSS-Protection Header
+- XSRF Cross-site request forgery
+- Rate Limiting of requests
+- Validation of Requests via some (incremental) Nonce
 
 ## Improvements
 
