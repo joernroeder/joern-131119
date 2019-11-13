@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react'
+import { isValidFile, fileAlreadyExists } from './validators/FileValidator'
 
 const Actions = {
   ADD_FILE: 'ADD_FILE',
@@ -10,29 +11,17 @@ const initialState = {
   files: [],
 }
 
-// TODO test schema
-const isValidFile = (state, file) => {
-  const { id } = file
-
-  const fileIndex = state.files.findIndex((stateFile) => {
-    return stateFile.id === id
-  })
-
-  // id already exists in in the list. returning...
-  if (fileIndex !== -1) {
-    return false
-  }
-
-  return true
-}
-
 const fileReducer = (state, action) => {
   switch (action.type) {
     case Actions.ADD_FILES: {
       const { files } = action.payload
 
       const validFiles = files.reduce((accumulator, candidate) => {
-        if (!isValidFile(state, candidate)) {
+        if (!isValidFile(candidate)) {
+          return accumulator
+        }
+
+        if (!fileAlreadyExists(state.files, candidate)) {
           return accumulator
         }
 
@@ -49,7 +38,11 @@ const fileReducer = (state, action) => {
       const { payload } = action
       const { file } = payload
 
-      if (!isValidFile(state, file)) {
+      if (!isValidFile(file)) {
+        return state
+      }
+
+      if (!fileAlreadyExists(state.files, file)) {
         return state
       }
 

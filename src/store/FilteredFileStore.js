@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react'
 import { useFilesState } from './FileStore'
+import { fileAlreadyExists, isValidFile } from './validators/FileValidator'
 
 const Actions = {
   SET_FILTER: 'SET_FILTER',
@@ -19,9 +20,20 @@ const filteredFileReducer = (state, action) => {
     case Actions.SET_FILTER: {
       const { query, filteredFiles } = payload
 
+      const validFilteredFiles = filteredFiles.reduce(
+        (accumulator, candidate) => {
+          if (!isValidFile(candidate)) {
+            return accumulator
+          }
+
+          return [...accumulator, candidate]
+        },
+        []
+      )
+
       return {
         ...state,
-        filteredFiles,
+        filteredFiles: validFilteredFiles,
         query,
         isActive: true,
       }
@@ -53,8 +65,6 @@ const FilteredFilesProvider = ({ children }) => {
     isActive: filteredState.isActive,
     query: filteredState.query,
   }
-
-  console.log(filteredFiles)
 
   return (
     <FilteredFilesStateContext.Provider value={filteredFiles}>
