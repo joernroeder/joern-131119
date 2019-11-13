@@ -2,7 +2,34 @@
 
 ## Installation
 
-// All the instructions to run the application
+The application consists of two individual parts: The react based fronted and the API server.
+Start each part in its own terminal:
+
+### Api-Server
+
+```
+cd api-server
+yarn install
+yarn start
+```
+
+Files will be uploaded to `./api-server/uploads`
+
+### React App
+
+```
+yarn install
+yarn start
+```
+
+Navigate to [http://localhost:3000](http://localhost:3000)
+
+Due to tailwinds file watcher, which gets started in a second process the initial load might be a blank screen.
+Reload any your're good to go.
+
+### Testing
+
+Run tests via `yarn test` or get a coverage report via `yarn coverage`. You'll find the report at [./coverage/index.html](./coverage/index.html)
 
 ## Security
 
