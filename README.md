@@ -166,6 +166,20 @@ Status: 201 Created
 }
 ```
 
+### DELETE /files/:id
+
+The `/files/:id` endpoint lets you delete a file previously created.
+
+Right now the API will always return `200 OK` status code – simulating the removal of the file.
+
+#### Parameters
+
+No parameters available
+
+#### Content
+
+No need to send content
+
 ---
 
 ## Other notes
