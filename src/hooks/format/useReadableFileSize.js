@@ -10,7 +10,7 @@ import { useMemo } from 'react'
  */
 const useReadableFileSize = (sizeInBytes) => {
   return useMemo(() => {
-    if (!sizeInBytes) {
+    if (!sizeInBytes || isNaN(sizeInBytes)) {
       return '0b'
     }
 
