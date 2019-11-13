@@ -2,6 +2,7 @@ import React from 'react'
 
 import FileUpload from './FileUpload'
 import FileSearch from './FileSearch'
+import UploadButton from './UploadButton'
 
 const AppHeader = () => {
   const acceptMimeTypes = ['image/png', 'image/jpeg']
@@ -16,9 +17,7 @@ const AppHeader = () => {
           maxFileSize={maxFileSize}
           onValidationError={onValidationError}
         >
-          <button className="block w-full uppercase text-lg border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white py-1 sm:px-10">
-            Upload
-          </button>
+          <UploadButton>Upload</UploadButton>
         </FileUpload>
       </div>
 
