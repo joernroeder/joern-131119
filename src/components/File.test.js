@@ -52,7 +52,7 @@ test('delete button should exist', () => {
   expect(queryByText('delete')).toBeInTheDocument()
 })
 
-test('hitting the delete button should correctly send the api request', async () => {
+test('hitting the delete button should correctly send the api request and encode the id', async () => {
   const props = {
     id: "someId?='id!=0",
     name: 'fileName',

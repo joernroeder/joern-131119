@@ -1,6 +1,8 @@
 import React from 'react'
 
 import '@testing-library/jest-dom/extend-expect'
+import 'jest-prop-type-error'
+
 import { render } from '@testing-library/react'
 
 import { FilesProvider } from '../store/FileStore'
