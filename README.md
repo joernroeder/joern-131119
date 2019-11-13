@@ -56,11 +56,51 @@ User input, as well as potential malicious API responses are a potential securit
 
 ## Improvements
 
-// What could be added to the app / API?
+The application can be improved on various layers:
+
+### Interface
+
+- The interface can be visually enhanced with more direct feedback like focus styles, progress bars tooltips, modals etc.
+- Accessibility via ARIA tags
+
+### Code quality
+
+My goal for this point in time was to set up a solid foundation for an easy use and extendable architecture.
+The api modules, store validators, file validators might be a good example.
+Code quality can be improved by adding more delicate control to individual components (which is required for more visual feedback) and further decoupling of components.
+Securing its own in- and outputs should be the job of every component to make them more self contained and atomic.
+
+### Security
+
+Main issue right now is the connector to the API. JSON parsing is done via axios and therefore i'm relying on their security.
+I think that additional checks the upload procedure may also have some weak points.
+
+### API
+
+- pagination for file list
+- search could only return ids, ui fetches data independently
 
 ## Libraries
 
-// What external libraries have you used and why?
+I'm trying to use as less external libraries as possible but included the following for various reasons:
+
+### Developer Experience
+
+- [prop-types](https://www.npmjs.com/package/prop-types) documents the intended type of properties passed to components and ensures correctness in conjunction with eslint.
+
+- [@testing-library/react](https://testing-library.com/react) Integration focused testing library
+- [jest-prop-type-error](https://www.npmjs.com/package/jest-prop-type-error) Improves prop-types support in Jest by failing tests on prop-type errors instead of ignoring them.
+
+### Utility CSS
+
+- [tailwindcss](https://tailwindcss.com/)
+- [purgeCSS](https://www.purgecss.com/) PurgeCSS removes unused CSS. This is essential in combination with utility CSS libraries as they normally provide the full set of options to choose from.
+
+### Api
+
+https://github.com/expressjs/multer
+
+- [Axios](https://www.npmjs.com/package/axios) promise based HTTP client.
 
 ## API
 
@@ -198,7 +238,3 @@ No parameters available
 No need to send content
 
 ---
-
-## Other notes
-
-// Anything else you want to mention
