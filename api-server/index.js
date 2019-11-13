@@ -17,6 +17,9 @@ const port = process.env.PORT || 4000
 
 app.get('/files', ListFilesHandler.handle)
 app.post('/upload', UploadFilesHandler.handle)
+app.delete('/files/:id', (req, res) => {
+  return res.status(200).send()
+})
 
 app.listen(port)
 
