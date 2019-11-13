@@ -46,7 +46,8 @@ const fileReducer = (state, action) => {
     }
 
     case Actions.ADD_FILE: {
-      const { payload: file } = action
+      const { payload } = action
+      const { file } = payload
 
       if (!isValidFile(state, file)) {
         return state
@@ -64,8 +65,6 @@ const fileReducer = (state, action) => {
       const fileIndex = state.files.findIndex((file) => {
         return file.id === id
       })
-
-      console.log(fileIndex)
 
       // id not found in files list. returning...
       if (fileIndex === -1) {
