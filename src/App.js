@@ -10,7 +10,7 @@ import { ApiProvider } from './api/ApiContext'
 
 function App() {
   return (
-    <main>
+    <main className="container mx-auto">
       <ApiProvider>
         <FilesProvider>
           <FilteredFilesProvider>
