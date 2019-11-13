@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it should render correctly 1`] = `
+<div>
+  <form>
+    <input
+      accept="image/jpeg"
+      class="hidden"
+      required=""
+      type="file"
+    />
+    <button>
+      Upload
+    </button>
+  </form>
+</div>
+`;

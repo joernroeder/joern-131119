@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`file search should render correctly 1`] = `
+<div>
+  <form
+    class="sm:order-1"
+  >
+    <input
+      class="border text-lg w-full px-4 py-1"
+      placeholder="Search documents…"
+      type="search"
+      value=""
+    />
+  </form>
+</div>
+`;
