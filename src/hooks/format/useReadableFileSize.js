@@ -14,10 +14,10 @@ const useReadableFileSize = (sizeInBytes) => {
       return '0b'
     }
 
-    const i = Math.floor(Math.log(sizeInBytes) / Math.log(1024))
+    const i = Math.floor(Math.log(sizeInBytes) / Math.log(1000))
 
     return (
-      (sizeInBytes / Math.pow(1024, i)).toFixed(2) * 1 +
+      (sizeInBytes / Math.pow(1000, i)).toFixed(2) * 1 +
       //' ' +
       ['b', 'kb', 'mb', 'gb', 'tb'][i]
     )
