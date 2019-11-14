@@ -1,4 +1,6 @@
 import React from 'react'
+import DevTools from 'react-async-devtools'
+
 import './tailwind.build.css'
 
 import { FilesProvider } from './store/FileStore'
@@ -11,6 +13,7 @@ import { ApiProvider } from './api/ApiContext'
 function App() {
   return (
     <main className="container mx-auto">
+      <DevTools />
       <ApiProvider>
         <FilesProvider>
           <FilteredFilesProvider>
