@@ -4,11 +4,13 @@ import { IfPending, IfFulfilled, IfRejected } from 'react-async'
 import axios from 'axios'
 
 import getFiles from './modules/getFiles'
+import fetchFiles from './modules/fetchFiles'
+
 import getFilteredFiles from './modules/getFilteredFiles'
+import fetchFilteredFiles from './modules/fetchFilteredFiles'
+
 import uploadFile from './modules/uploadFile'
 import deleteFile from './modules/deleteFile'
-
-import fetchFiles from './modules/fetchFiles'
 
 const modules = {
   getFiles,
@@ -35,6 +37,7 @@ const ApiProvider = ({ children, axiosConfig }) => {
   let endpoints = {
     getCancelToken: () => axios.CancelToken.source(),
     fetchFiles: fetchFiles(apiConfig),
+    fetchFilteredFiles: fetchFilteredFiles(apiConfig),
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
