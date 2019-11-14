@@ -1,13 +1,24 @@
-import addCancelToken from '../helpers/addCancelToken'
+import { useAsync } from 'react-async'
 
-const uploadFile = (axios) => {
-  return async ({ with: fileData, ...args }) => {
-    return await axios
-      .post('/upload', fileData, {
-        ...addCancelToken(args),
-      })
-      .then((res) => res.data.data)
+export default (apiOptions) => {
+  const { baseURL, headers } = apiOptions
+
+  const uploadFile = ([data], props, options) => {
+    const { signal } = options
+
+    return fetch(`${baseURL}/upload`, {
+      method: 'POST',
+      body: data,
+      headers,
+      signal,
+    }).then((res) => res.json())
+  }
+
+  return (options) => {
+    console.log(options)
+    return useAsync({
+      ...options,
+      deferFn: uploadFile,
+    })
   }
 }
-
-export default uploadFile

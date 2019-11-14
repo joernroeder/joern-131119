@@ -12,40 +12,14 @@ const FileUpload = (props) => {
 
   // set up upload API
   const api = useApiContext()
-  const [status, setStatus] = useState(undefined)
-  const [cancelToken, _] = useState(api.getCancelToken())
-  let [isCanceled, setIsCanceled] = useState(false)
-
-  useEffect(() => {
-    return () => {
-      cancelToken.cancel()
-    }
-  }, [cancelToken])
-
-  const startFileUpload = useCallback(
-    (fileData) => {
-      if (!fileData) {
-        return
-      }
-
-      setStatus(ApiStatus.LOADING)
-
-      api
-        .uploadFile({ with: fileData, cancelVia: cancelToken })
-        .then((file) => {
-          console.log(file)
-          dispatch({
-            type: Actions.ADD_FILE,
-            payload: { file },
-          })
-          setStatus(ApiStatus.SUCCESS)
-        })
-        .catch(() => {
-          setStatus(ApiStatus.ERROR)
-        })
+  const { run: uploadFile, isLoading: isUploading } = api.uploadFile({
+    onResolve: ({ data }) => {
+      dispatch({
+        type: Actions.ADD_FILE,
+        payload: { file: data },
+      })
     },
-    [api, cancelToken, dispatch]
-  )
+  })
 
   const { accept, maxFileSize, multiple, disabled } = props
   const { onValidationError } = props
@@ -83,7 +57,7 @@ const FileUpload = (props) => {
     const data = new FormData()
     data.append('file', file)
 
-    startFileUpload(data)
+    uploadFile(data)
   }
 
   const onOpenFileSelector = (event) => {
@@ -109,7 +83,7 @@ const FileUpload = (props) => {
       />
       {React.cloneElement(props.children, {
         onClick: onOpenFileSelector,
-        disabled: status === ApiStatus.LOADING,
+        disabled: isUploading,
       })}
     </form>
   )

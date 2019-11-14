@@ -39,6 +39,7 @@ const ApiProvider = ({ children, axiosConfig }) => {
     fetchFiles: fetchFiles(apiConfig),
     fetchFilteredFiles: fetchFilteredFiles(apiConfig),
     deleteFile: deleteFile(apiConfig),
+    uploadFile: uploadFile(apiConfig),
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
