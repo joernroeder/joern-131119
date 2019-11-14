@@ -27,6 +27,19 @@ const FilesList = () => {
     },
   })
 
+  // TODO improve: factory?
+  const { run: deleteFile } = api.deleteFile()
+  const [deletingFiles, setDeletingFiles] = useState([])
+
+  const handleFileDelete = (id) => {
+    deleteFile(id, {
+      onResolve: () => {
+        dispatch({ type: Actions.DELETE_FILE, payload: { id } })
+      },
+    })
+    setDeletingFiles([deletingFiles, id])
+  }
+
   // setting up dynamic content
 
   const filesCount = files.length
@@ -46,7 +59,16 @@ const FilesList = () => {
     const { name, size } = attributes
 
     try {
-      return <File key={id} id={id} name={name} size={size} />
+      return (
+        <File
+          key={id}
+          id={id}
+          name={name}
+          size={size}
+          onDelete={handleFileDelete}
+          isDeleting={deletingFiles.includes(id)}
+        />
+      )
     } catch (error) {
       return null
     }

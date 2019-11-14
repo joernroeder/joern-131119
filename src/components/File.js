@@ -2,52 +2,16 @@ import React, { useState, useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 import useReadableFileSize from '../hooks/format/useReadableFileSize'
-import { useApiContext, ApiStatus } from '../api/ApiContext'
+import { useApiContext } from '../api/ApiContext'
 import { useFilesDispatch, Actions } from '../store/FileStore'
 
-const File = ({ id, name, size }) => {
-  const [isDeleting, setIsDeleting] = useState(false)
-  const dispatch = useFilesDispatch()
+const File = ({ id, name, size, onDelete, isDeleting }) => {
+  //const dispatch = useFilesDispatch()
   const readableSize = useReadableFileSize(size)
 
-  const api = useApiContext()
-  const [status, setStatus] = useState(undefined)
-  const [cancelToken, _] = useState(api.getCancelToken())
-  let [isCanceled, setIsCanceled] = useState(false)
+  //const api = useApiContext()
 
-  useEffect(() => {
-    return () => {
-      cancelToken.cancel()
-      setIsCanceled(true)
-    }
-  }, [cancelToken])
-
-  const onDeleteClick = useCallback(
-    (event) => {
-      event.preventDefault()
-
-      setIsDeleting(true)
-      setStatus(ApiStatus.LOADING)
-
-      api
-        .deleteFile({ withId: id, cancelVia: cancelToken })
-        .then((file) => {
-          if (isCanceled) {
-            return
-          }
-
-          dispatch({ type: Actions.DELETE_FILE, payload: { id } })
-          setStatus(ApiStatus.SUCCESS)
-        })
-        .catch(() => {
-          if (isCanceled) {
-            return
-          }
-          setStatus(ApiStatus.ERROR)
-        })
-    },
-    [api, cancelToken, isCanceled, dispatch, id]
-  )
+  //useEffect(() => cancel, [])
 
   if (!id) {
     return null
@@ -66,7 +30,7 @@ const File = ({ id, name, size }) => {
             <button
               type="button"
               className="text-sm border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white disabled:text-gray-900 disabled:bg-gray-400 disabled:cursor-default py-1 px-4"
-              onClick={onDeleteClick}
+              onClick={(event) => onDelete(id)}
               disabled={isDeleting}
             >
               delete
@@ -82,6 +46,12 @@ File.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  isDeleting: PropTypes.bool,
+}
+
+File.defaultProps = {
+  isDeleting: false,
 }
 
 export default File

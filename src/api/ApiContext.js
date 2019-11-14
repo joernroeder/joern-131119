@@ -38,6 +38,7 @@ const ApiProvider = ({ children, axiosConfig }) => {
     getCancelToken: () => axios.CancelToken.source(),
     fetchFiles: fetchFiles(apiConfig),
     fetchFilteredFiles: fetchFilteredFiles(apiConfig),
+    deleteFile: deleteFile(apiConfig),
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
