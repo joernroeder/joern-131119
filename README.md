@@ -96,11 +96,16 @@ I'm trying to use as less external libraries as possible but included the follow
 - [tailwindcss](https://tailwindcss.com/)
 - [purgeCSS](https://www.purgecss.com/) PurgeCSS removes unused CSS. This is essential in combination with utility CSS libraries as they normally provide the full set of options to choose from.
 
-### Api
+### "Functional Async React"
 
-https://github.com/expressjs/multer
+Dealing with async state in functional components without dealing with repetitive `const [isLoading, setLoading] = useState(false)` statements in each component is hard. Also abstracting it into custom hooks has its downside in combination with data fetching.
+My approach to create a custom hook to handle async operations nicely and behind the scenes (for most component authors) failed badly and also the switch to [axios](https://github.com/axios/axios) driven async state was unconvincing for me.
+Going "back" to class based components also felt like a step in the wrong direction.
 
-- [Axios](https://www.npmjs.com/package/axios) promise based HTTP client.
+Now it seems so obvious, but I did not recognize https://github.com/async-library/react-async before – which solves the mentioned problems in an elegant way. Therefore API modules are rewritten with `react-async`, `axios` module removed and all requests are done with `fetch` now.
+The Components are therefore much cleaner, API and async related functionality is hidden again, requests are still cancelable.
+
+TODO: update tests.
 
 ## API
 

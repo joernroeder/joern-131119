@@ -1,20 +1,14 @@
 import React, { useContext } from 'react'
 import { IfPending, IfFulfilled, IfRejected } from 'react-async'
 
-import axios from 'axios'
-
-import getFiles from './modules/getFiles'
 import fetchFiles from './modules/fetchFiles'
-
-import getFilteredFiles from './modules/getFilteredFiles'
 import fetchFilteredFiles from './modules/fetchFilteredFiles'
-
 import uploadFile from './modules/uploadFile'
 import deleteFile from './modules/deleteFile'
 
-const modules = {
-  getFiles,
-  getFilteredFiles,
+const apiModules = {
+  fetchFiles,
+  fetchFilteredFiles,
   uploadFile,
   deleteFile,
 }
@@ -25,21 +19,14 @@ const apiConfig = {
   timeout: 1000,
 }
 
-const ApiStatus = {
-  LOADING: 'LOADING',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
-}
-
 const ApiContext = React.createContext(undefined)
 
-const ApiProvider = ({ children, axiosConfig }) => {
-  let endpoints = {
-    getCancelToken: () => axios.CancelToken.source(),
-    fetchFiles: fetchFiles(apiConfig),
-    fetchFilteredFiles: fetchFilteredFiles(apiConfig),
-    deleteFile: deleteFile(apiConfig),
-    uploadFile: uploadFile(apiConfig),
+const ApiProvider = ({ children }) => {
+  let endpoints = {}
+
+  // add apiConfig to all apiModules
+  for (let [name, apiModule] of Object.entries(apiModules)) {
+    endpoints[name] = apiModule(apiConfig)
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
@@ -54,11 +41,4 @@ const useApiContext = () => {
   return context
 }
 
-export {
-  useApiContext,
-  ApiProvider,
-  ApiStatus,
-  IfPending,
-  IfFulfilled,
-  IfRejected,
-}
+export { useApiContext, ApiProvider, IfPending, IfFulfilled, IfRejected }

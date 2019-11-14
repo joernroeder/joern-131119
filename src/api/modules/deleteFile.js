@@ -16,6 +16,9 @@ export default (apiOptions) => {
   }
 
   return (options) => {
-    return useAsync({ deferFn: deleteFile }, options)
+    return useAsync({
+      ...options,
+      deferFn: deleteFile,
+    })
   }
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import useReadableFileSize from '../hooks/format/useReadableFileSize'
 
@@ -33,6 +33,7 @@ const FilesList = () => {
 
   const handleFileDelete = (id) => {
     deleteFile(id, {
+      // TODO remove id from deletingFiles list on(resolve|reject)
       onResolve: () => {
         dispatch({ type: Actions.DELETE_FILE, payload: { id } })
       },

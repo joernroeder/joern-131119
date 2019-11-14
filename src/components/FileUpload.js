@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 
 import { useFilesDispatch, Actions } from '../store/FileStore'
-import { useApiContext, ApiStatus } from '../api/ApiContext'
+import { useApiContext } from '../api/ApiContext'
 
 const FileUpload = (props) => {
   // get dispatch from store

@@ -1,17 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 import useReadableFileSize from '../hooks/format/useReadableFileSize'
-import { useApiContext } from '../api/ApiContext'
-import { useFilesDispatch, Actions } from '../store/FileStore'
 
 const File = ({ id, name, size, onDelete, isDeleting }) => {
-  //const dispatch = useFilesDispatch()
   const readableSize = useReadableFileSize(size)
-
-  //const api = useApiContext()
-
-  //useEffect(() => cancel, [])
 
   if (!id) {
     return null
@@ -30,7 +23,7 @@ const File = ({ id, name, size, onDelete, isDeleting }) => {
             <button
               type="button"
               className="text-sm border border-blue-900 bg-blue-400 hover:bg-blue-900 hover:text-white focus:bg-blue-900 focus:text-white disabled:text-gray-900 disabled:bg-gray-400 disabled:cursor-default py-1 px-4"
-              onClick={(event) => onDelete(id)}
+              onClick={() => onDelete(id)}
               disabled={isDeleting}
             >
               delete
