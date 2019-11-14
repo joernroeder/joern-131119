@@ -1,10 +1,14 @@
 import React, { useContext } from 'react'
+import { IfPending, IfFulfilled, IfRejected } from 'react-async'
+
 import axios from 'axios'
 
 import getFiles from './modules/getFiles'
 import getFilteredFiles from './modules/getFilteredFiles'
 import uploadFile from './modules/uploadFile'
 import deleteFile from './modules/deleteFile'
+
+import fetchFiles from './modules/fetchFiles'
 
 const modules = {
   getFiles,
@@ -13,8 +17,9 @@ const modules = {
   deleteFile,
 }
 
-const defaultAxiosConfig = {
-  baseURL: 'http://localhost:4000/',
+const apiConfig = {
+  baseURL: 'http://localhost:4000',
+  headers: { Accept: 'application/json' },
   timeout: 1000,
 }
 
@@ -27,16 +32,9 @@ const ApiStatus = {
 const ApiContext = React.createContext(undefined)
 
 const ApiProvider = ({ children, axiosConfig }) => {
-  const config = Object.assign({}, defaultAxiosConfig, axiosConfig)
-  const axiosInstance = axios.create(config)
-
-  // inject axios instance into api modules
   let endpoints = {
     getCancelToken: () => axios.CancelToken.source(),
-  }
-
-  for (let [name, apiModule] of Object.entries(modules)) {
-    endpoints[name] = apiModule(axiosInstance)
+    fetchFiles: fetchFiles(apiConfig),
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
@@ -51,4 +49,11 @@ const useApiContext = () => {
   return context
 }
 
-export { useApiContext, ApiProvider, ApiStatus }
+export {
+  useApiContext,
+  ApiProvider,
+  ApiStatus,
+  IfPending,
+  IfFulfilled,
+  IfRejected,
+}
