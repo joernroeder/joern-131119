@@ -2,9 +2,7 @@
 
 exports[`file search should render correctly 1`] = `
 <div>
-  <form
-    class="sm:order-1"
-  >
+  <form>
     <input
       class="border text-lg w-full px-4 py-1"
       placeholder="Search documents…"

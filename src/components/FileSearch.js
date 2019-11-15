@@ -9,7 +9,7 @@ import useDebounce from '../hooks/useDebounce'
 import { useApiContext } from '../api/ApiContext'
 
 // TODO implement loading indicator and show errors
-const FileSearch = () => {
+const FileSearch = ({ className }) => {
   // debounced value
   const [value, setValue] = useState('')
   const debouncedValue = useDebounce(value, 100)
@@ -64,7 +64,7 @@ const FileSearch = () => {
   }
 
   return (
-    <form className="sm:order-1">
+    <form className={className}>
       <input
         type="search"
         className="border text-lg w-full px-4 py-1"

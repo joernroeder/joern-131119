@@ -21,7 +21,7 @@ const AppHeader = () => {
         </FileUpload>
       </div>
 
-      <FileSearch />
+      <FileSearch className="sm:order-1" />
     </header>
   )
 }
