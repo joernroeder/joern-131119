@@ -9,11 +9,6 @@ import {
 
 import FilesList from './FilesList'
 
-afterEach(() => {
-  // cleaning up the mess left behind the previous test
-  fetch.resetMocks()
-})
-
 test('it should correctly render the loading indicator', async () => {
   const { queryByText, container } = renderWithApiAndFileProviders(
     <FilesList />

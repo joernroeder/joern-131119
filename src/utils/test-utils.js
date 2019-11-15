@@ -10,7 +10,13 @@ import { FilesProvider } from '../store/FileStore'
 import { FilteredFilesProvider } from '../store/FilteredFileStore'
 import { ApiProvider } from '../api/ApiContext'
 
+// override fetch with mocked version
+global._actualFetch = global.fetch
 global.fetch = fetchMock
+
+afterEach(() => {
+  fetch.resetMocks()
+})
 
 const WithFilesProvider = ({ children }) => {
   return (
