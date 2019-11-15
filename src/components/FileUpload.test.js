@@ -1,7 +1,6 @@
 import React from 'react'
 import { renderWithApiAndFileProviders, fireEvent, act } from 'test-utils'
 
-import axiosMock, { axiosInstance } from 'axios'
 import FileUpload from './FileUpload'
 
 const uploadProps = {

@@ -1,14 +1,14 @@
 import React from 'react'
-import { renderWithApiAndFileProviders, fireEvent, act, wait } from 'test-utils'
+import { renderWithApiAndFileProviders, fireEvent, act } from 'test-utils'
 
 import File from './File'
-import mockAxios from 'jest-mock-axios'
 
 test('files without/with invalid id should be treated as invalid', () => {
   const props = {
     id: '',
     name: 'my-file-name.txt',
     size: 42,
+    onDelete: () => {},
   }
 
   const { container } = renderWithApiAndFileProviders(<File {...props} />)
@@ -21,6 +21,7 @@ test('it should correctly show the file name', () => {
     id: 'someId',
     name: 'my-file-name.txt',
     size: 0,
+    onDelete: () => {},
   }
 
   const { queryByText } = renderWithApiAndFileProviders(<File {...props} />)
@@ -33,6 +34,7 @@ test('it should correctly escape', () => {
     id: 'someId',
     name: '<p>my-file-name.txt</p>',
     size: 0,
+    onDelete: () => {},
   }
 
   const { queryByText } = renderWithApiAndFileProviders(<File {...props} />)
@@ -45,6 +47,7 @@ test('delete button should exist', () => {
     id: 'someId',
     name: 'fileName',
     size: 0,
+    onDelete: () => {},
   }
 
   const { queryByText } = renderWithApiAndFileProviders(<File {...props} />)
@@ -52,11 +55,12 @@ test('delete button should exist', () => {
   expect(queryByText('delete')).toBeInTheDocument()
 })
 
-test('hitting the delete button should correctly send the api request and encode the id', async () => {
+test('hitting the delete button should correctly call the passed in onDelete prop', async () => {
   const props = {
-    id: "someId?='id!=0",
+    id: 'someId',
     name: 'fileName',
     size: 42,
+    onDelete: jest.fn(),
   }
 
   const { queryByText } = renderWithApiAndFileProviders(<File {...props} />)
@@ -67,12 +71,6 @@ test('hitting the delete button should correctly send the api request and encode
     fireEvent.click(button)
   })
 
-  await wait(() => {
-    expect(mockAxios.delete).toHaveBeenCalled()
-    expect(mockAxios.delete.mock.calls[0][0]).toBe(
-      "/files/someId%3F%3D'id!%3D0"
-    )
-
-    mockAxios.mockResponse({ status: 200, statusText: 'OK' })
-  })
+  expect(props.onDelete).toBeCalledTimes(1)
+  expect(props.onDelete.mock.calls[0][0]).toEqual('someId')
 })

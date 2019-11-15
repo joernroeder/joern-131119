@@ -1,5 +1,4 @@
 import React from 'react'
-import mockAxios from 'jest-mock-axios'
 
 import { renderWithApiAndFileProviders, fireEvent, wait } from 'test-utils'
 
@@ -7,7 +6,7 @@ import FileSearch from './FileSearch'
 
 afterEach(() => {
   // cleaning up the mess left behind the previous test
-  mockAxios.reset()
+  fetch.resetMocks()
 })
 
 test('file search should render correctly', () => {
@@ -27,18 +26,12 @@ test('file search should trigger a search on value change', async () => {
   fireEvent.change(search, { target: { value: 'someInp' } })
 
   await wait(() => {
-    expect(mockAxios.get).toHaveBeenCalled()
-    const [
-      url,
-      {
-        params: { q },
-      },
-    ] = mockAxios.get.mock.calls[0]
+    expect(fetch).toHaveBeenCalled()
+    const [uri] = fetch.mock.calls[0]
 
-    expect(url).toBe('/files')
-    expect(q).toBe('someInp')
+    expect(uri).toContain('/files?q=someInp')
 
-    mockAxios.mockResponse({
+    fetch.mockResponse({
       data: [
         {
           type: 'file',
@@ -69,13 +62,11 @@ test('file search should send the query parameter encoded', async () => {
   })
 
   await wait(() => {
-    const [
-      url,
-      {
-        params: { q },
-      },
-    ] = mockAxios.get.mock.calls[0]
+    console.log(fetch.mock.calls[0])
+    const [uri] = fetch.mock.calls[0]
 
-    expect(q).toBe('%3Cscript%3Ealert(%22here%20i%20am!%22)%3C%2Fscript%3E')
+    expect(uri).toContain(
+      '?q=%3Cscript%3Ealert(%22here%20i%20am!%22)%3C%2Fscript%3E'
+    )
   })
 })
