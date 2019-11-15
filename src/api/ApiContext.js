@@ -1,4 +1,6 @@
 import React, { useContext } from 'react'
+import PropTypes from 'prop-types'
+
 import { IfPending, IfFulfilled, IfRejected } from 'react-async'
 
 import fetchFiles from './modules/fetchFiles'
@@ -13,7 +15,7 @@ const apiModules = {
   deleteFile,
 }
 
-const apiConfig = {
+const defaultApiConfig = {
   baseURL: 'http://localhost:4000',
   headers: { Accept: 'application/json' },
   timeout: 1000,
@@ -21,15 +23,36 @@ const apiConfig = {
 
 const ApiContext = React.createContext(undefined)
 
-const ApiProvider = ({ children }) => {
-  let endpoints = {}
+const ApiProvider = ({
+  children,
+  apiConfig: apiConfigOptions,
+  endpoints: initialEndpoints,
+}) => {
+  const apiConfig = { ...defaultApiConfig, ...apiConfigOptions }
+  let endpoints = { ...initialEndpoints }
 
   // add apiConfig to all apiModules
   for (let [name, apiModule] of Object.entries(apiModules)) {
+    // skip endpoints which were already passed in via initialEndpoints
+    if (endpoints[name]) {
+      continue
+    }
+
     endpoints[name] = apiModule(apiConfig)
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
+}
+
+ApiProvider.propTypes = {
+  apiConfig: PropTypes.object,
+  endpoints: PropTypes.objectOf(PropTypes.func),
+  children: PropTypes.node.isRequired,
+}
+
+ApiProvider.defaultProps = {
+  apiConfig: {},
+  endpoints: {},
 }
 
 const useApiContext = () => {

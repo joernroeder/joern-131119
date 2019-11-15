@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react'
 import { isValidFile, fileAlreadyExists } from './validators/FileValidator'
+import PropTypes from 'prop-types'
 
 const Actions = {
   ADD_FILE: 'ADD_FILE',
@@ -7,7 +8,7 @@ const Actions = {
   DELETE_FILE: 'DELETE_FILE',
 }
 
-const initialState = {
+const defaultState = {
   files: [],
 }
 
@@ -85,8 +86,11 @@ const fileReducer = (state, action) => {
 const FilesStateContext = createContext(undefined)
 const FilesDispatchContext = createContext(undefined)
 
-const FilesProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(fileReducer, initialState)
+const FilesProvider = ({ children, state: initialState }) => {
+  const [state, dispatch] = useReducer(fileReducer, {
+    ...defaultState,
+    ...initialState,
+  })
 
   return (
     <FilesStateContext.Provider value={state}>
@@ -95,6 +99,11 @@ const FilesProvider = ({ children }) => {
       </FilesDispatchContext.Provider>
     </FilesStateContext.Provider>
   )
+}
+
+FilesProvider.propTypes = {
+  children: PropTypes.node,
+  state: PropTypes.object,
 }
 
 const useFilesState = () => {

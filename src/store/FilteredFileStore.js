@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react'
+import PropTypes from 'prop-types'
+
 import { useFilesState } from './FileStore'
 import { fileAlreadyExists, isValidFile } from './validators/FileValidator'
 
@@ -7,7 +9,7 @@ const Actions = {
   DISABLE_FILTER: 'DISABLE_FILTER',
 }
 
-const initialState = {
+const defaultState = {
   filteredFileIds: [],
   query: '',
   isActive: false,
@@ -47,7 +49,9 @@ const filteredFileReducer = (state, action) => {
     case Actions.DISABLE_FILTER: {
       return {
         ...state,
-        ...initialState,
+        filteredFileIds: [],
+        query: '',
+        isActive: false,
       }
     }
   }
@@ -77,12 +81,12 @@ const getFilteredFiles = (filteredIds, files) => {
 }
 
 // TODO documentation
-const FilteredFilesProvider = ({ children }) => {
+const FilteredFilesProvider = ({ children, state: initialState }) => {
   const { files } = useFilesState()
-  const [filteredState, dispatch] = useReducer(
-    filteredFileReducer,
-    initialState
-  )
+  const [filteredState, dispatch] = useReducer(filteredFileReducer, {
+    ...defaultState,
+    ...initialState,
+  })
 
   const filteredFiles = {
     files: filteredState.isActive
@@ -99,6 +103,11 @@ const FilteredFilesProvider = ({ children }) => {
       </FilteredFilesDispatchContext.Provider>
     </FilteredFilesStateContext.Provider>
   )
+}
+
+FilteredFilesProvider.propTypes = {
+  children: PropTypes.node,
+  initialState: PropTypes.object,
 }
 
 const useFilteredFilesState = () => {
