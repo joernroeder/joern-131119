@@ -2,12 +2,15 @@ import React from 'react'
 
 import '@testing-library/jest-dom/extend-expect'
 import 'jest-prop-type-error'
+import fetchMock from 'jest-fetch-mock'
 
 import { render } from '@testing-library/react'
 
 import { FilesProvider } from '../store/FileStore'
 import { FilteredFilesProvider } from '../store/FilteredFileStore'
 import { ApiProvider } from '../api/ApiContext'
+
+global.fetch = fetchMock
 
 const WithFilesProvider = ({ children }) => {
   return (
