@@ -9,6 +9,10 @@ export const isValidFileId = (id) => {
 }
 
 export const isValidFileName = (name) => {
+  if (!name) {
+    return false
+  }
+
   if (validator.isDataURI(name)) {
     return false
   }

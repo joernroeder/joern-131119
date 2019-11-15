@@ -79,7 +79,7 @@ const FilesList = () => {
   return (
     <>
       <IfPending state={fetchFilesState}>
-        <div className="text-center py-10">Loading...</div>
+        <div className="text-center py-10">Loading…</div>
       </IfPending>
 
       <IfRejected state={fetchFilesState}>
