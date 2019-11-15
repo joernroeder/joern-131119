@@ -16,6 +16,10 @@ const fileReducer = (state, action) => {
     case Actions.ADD_FILES: {
       const { files } = action.payload
 
+      if (!files || !Array.isArray(files)) {
+        return state
+      }
+
       const validFiles = files.reduce((accumulator, candidate) => {
         if (!isValidFile(candidate)) {
           return accumulator

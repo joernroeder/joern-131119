@@ -20,7 +20,7 @@ const filteredFileReducer = (state, action) => {
     case Actions.SET_FILTER: {
       const { query, filteredFiles } = payload
 
-      if (!filteredFiles) {
+      if (!filteredFiles || !Array.isArray(filteredFiles)) {
         return state
       }
 
