@@ -15,7 +15,6 @@ export default (apiOptions) => {
   }
 
   return (options) => {
-    console.log(options)
     return useAsync({
       ...options,
       deferFn: uploadFile,

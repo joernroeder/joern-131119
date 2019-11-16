@@ -106,8 +106,7 @@ test('it should correctly call the onValidationHandler if the file exceeds the l
   expect(onValidationError.mock.calls[0][0]).toBe('The given file is to large.')
 })
 
-/*
-test('@current it should correctly call the axios instance', async () => {
+test('it should correctly send the file', async () => {
   const onValidationError = jest.fn()
   const { container } = renderWithApiAndFileProviders(
     <FileUpload {...uploadProps} onValidationError={onValidationError}>
@@ -116,21 +115,37 @@ test('@current it should correctly call the axios instance', async () => {
   )
 
   const input = container.querySelector('input')
-  const file = new File(['dummy content'], 'example.png', {type: 'image/jpeg'})
+  const file = new File(['dummy content'], 'example.png', {
+    type: 'image/jpeg',
+  })
 
-  act(() => {
+  fetch.mockResponseOnce(
+    JSON.stringify({
+      data: {
+        type: 'file',
+        id: '6fc6ff794b7101af013fa8ec300879d1ed245c3926619c1625753bf34ef8ccbd',
+        attributes: {
+          name: '1-bsSpf1dNMQ6NIotoSMQQrA<p>inject</p>',
+          size: 26492,
+        },
+      },
+    })
+  )
+
+  await act(async () => {
     // @see https://github.com/testing-library/react-testing-library/issues/93#issuecomment-403887769
     Object.defineProperty(input, 'files', {
       value: [file],
     })
-  })
 
-  act(() => {
     fireEvent.change(input)
   })
 
-  console.log(onValidationError.mock.calls)
+  expect(onValidationError).not.toBeCalled()
 
-  console.log(axiosInstance.mock.calls)
+  const [uri, opts] = fetch.mock.calls[0]
+  const { body: formData } = opts
+
+  expect(formData.getAll('file')).toHaveLength(1)
+  expect(formData.get('file')).toBe(file)
 })
- */
