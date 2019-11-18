@@ -3,7 +3,7 @@ import { useAsync } from 'react-async'
 export default (apiOptions) => {
   const { baseURL, headers } = apiOptions
 
-  const uploadFile = ([data], props, options) => {
+  const uploadFile = ([data, { onResolve, onReject }], props, options) => {
     const { signal } = options
 
     return fetch(`${baseURL}/upload`, {
@@ -11,7 +11,10 @@ export default (apiOptions) => {
       body: data,
       headers,
       signal,
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
+      .then(onResolve)
+      .catch(onReject)
   }
 
   return (options) => {

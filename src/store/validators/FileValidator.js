@@ -73,8 +73,8 @@ export const fileAlreadyExists = (list, file) => {
 
   // id already exists in in the list. returning...
   if (fileIndex !== -1) {
-    return false
+    return true
   }
 
-  return true
+  return false
 }

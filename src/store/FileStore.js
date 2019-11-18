@@ -26,7 +26,7 @@ const fileReducer = (state, action) => {
           return accumulator
         }
 
-        if (!fileAlreadyExists(state.files, candidate)) {
+        if (fileAlreadyExists(state.files, candidate)) {
           return accumulator
         }
 
@@ -47,7 +47,7 @@ const fileReducer = (state, action) => {
         return state
       }
 
-      if (!fileAlreadyExists(state.files, file)) {
+      if (fileAlreadyExists(state.files, file)) {
         return state
       }
 

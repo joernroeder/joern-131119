@@ -8,10 +8,13 @@ const uploadProps = {
   maxFileSize: 1e6, // 1mb
 }
 
+const NullButton = () => null
+
 test('it should render correctly', () => {
+  const Button = () => <button>Upload</button>
   const { container } = renderWithApiAndFileProviders(
     <FileUpload {...uploadProps}>
-      <button>Upload</button>
+      <Button />
     </FileUpload>
   )
 
@@ -21,7 +24,7 @@ test('it should render correctly', () => {
 test('the file input should be invisible', () => {
   const { container } = renderWithApiAndFileProviders(
     <FileUpload {...uploadProps}>
-      <button>Upload</button>
+      <NullButton />
     </FileUpload>
   )
 
@@ -31,9 +34,13 @@ test('the file input should be invisible', () => {
 })
 
 test('a click on the child should open the file selector', () => {
+  const Button = ({ openFileSelector }) => (
+    <button onClick={openFileSelector}>Upload</button>
+  )
+
   const { container, getByText } = renderWithApiAndFileProviders(
     <FileUpload {...uploadProps}>
-      <button>Upload</button>
+      <Button />
     </FileUpload>
   )
 
@@ -46,18 +53,26 @@ test('a click on the child should open the file selector', () => {
   expect(input.onclick).toHaveBeenCalledTimes(1)
 })
 
-test('it should correctly call the onValidationHandler', () => {
-  const onValidationError = jest.fn()
+test('it should correctly reject if the file type is not allowed', async () => {
+  let testIsRejected = false
+  let testErrorMessage = undefined
+
+  const Button = ({ uploadState: { isRejected, error } }) => {
+    testIsRejected = isRejected
+    testErrorMessage = error ? error.message : undefined
+
+    return null
+  }
 
   const { container } = renderWithApiAndFileProviders(
-    <FileUpload {...uploadProps} onValidationError={onValidationError}>
-      <button>Upload</button>
+    <FileUpload {...uploadProps}>
+      <Button />
     </FileUpload>
   )
 
   const input = container.querySelector('input')
 
-  act(() => {
+  await act(async () => {
     const file = new File(['dummy content'], 'example.png', {
       type: 'image/png',
     })
@@ -70,23 +85,26 @@ test('it should correctly call the onValidationHandler', () => {
     fireEvent.change(input)
   })
 
-  expect(onValidationError).toHaveBeenCalledTimes(1)
-  expect(onValidationError.mock.calls[0][0]).toBe(
-    'The given file type is not allowed.'
-  )
+  expect(testIsRejected).toBeTruthy()
+  expect(testErrorMessage).toBe('The given file type is not allowed.')
 })
 
-test('it should correctly call the onValidationHandler if the file exceeds the limit', () => {
-  const onValidationError = jest.fn()
+test('it should correctly reject if the file exceeds the limit', () => {
   const maxFileSize = 9 // 9 bytes
 
+  let testIsRejected = false
+  let testErrorMessage = undefined
+
+  const Button = ({ uploadState: { isRejected, error } }) => {
+    testIsRejected = isRejected
+    testErrorMessage = error ? error.message : undefined
+
+    return null
+  }
+
   const { container } = renderWithApiAndFileProviders(
-    <FileUpload
-      {...uploadProps}
-      maxFileSize={maxFileSize}
-      onValidationError={onValidationError}
-    >
-      <button>Upload</button>
+    <FileUpload {...uploadProps} maxFileSize={maxFileSize}>
+      <Button />
     </FileUpload>
   )
 
@@ -102,15 +120,26 @@ test('it should correctly call the onValidationHandler if the file exceeds the l
     fireEvent.change(input)
   })
 
-  expect(onValidationError).toHaveBeenCalledTimes(1)
-  expect(onValidationError.mock.calls[0][0]).toBe('The given file is to large.')
+  expect(testIsRejected).toBeTruthy()
+  expect(testErrorMessage).toBe('The given file is to large.')
 })
 
 test('it should correctly send the file', async () => {
-  const onValidationError = jest.fn()
+  let testIsRejected = false
+  let testIsResolved = false
+  let testErrorMessage = undefined
+
+  const Button = ({ uploadState: { isRejected, isResolved, error } }) => {
+    testIsRejected = isRejected
+    testIsResolved = isResolved
+    testErrorMessage = error ? error.message : undefined
+
+    return null
+  }
+
   const { container } = renderWithApiAndFileProviders(
-    <FileUpload {...uploadProps} onValidationError={onValidationError}>
-      <button>Upload</button>
+    <FileUpload {...uploadProps}>
+      <Button />
     </FileUpload>
   )
 
@@ -141,7 +170,9 @@ test('it should correctly send the file', async () => {
     fireEvent.change(input)
   })
 
-  expect(onValidationError).not.toBeCalled()
+  expect(testIsRejected).toBeFalsy()
+  expect(testIsResolved).toBeTruthy()
+  expect(testErrorMessage).toBeUndefined()
 
   const [uri, opts] = fetch.mock.calls[0]
   const { body: formData } = opts

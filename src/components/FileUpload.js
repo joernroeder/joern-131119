@@ -1,28 +1,44 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
-import { useFilesDispatch, Actions } from '../store/FileStore'
+import { useFilesDispatch, Actions, useFilesState } from '../store/FileStore'
 import { useApiContext } from '../api/ApiContext'
+import {
+  isValidFile,
+  fileAlreadyExists,
+} from '../store/validators/FileValidator'
+
+import { limitToReadOnlyAsyncState } from '../utils/useAsyncStateShape'
 
 const FileUpload = (props) => {
   // get dispatch from store
   const dispatch = useFilesDispatch()
+  const { files: existingFilesList } = useFilesState()
 
   const fileInput = useRef(undefined)
 
   // set up upload API
   const api = useApiContext()
-  const { run: uploadFile, isLoading: isUploading } = api.uploadFile({
-    onResolve: ({ data }) => {
-      dispatch({
-        type: Actions.ADD_FILE,
-        payload: { file: data },
-      })
-    },
-  })
+  const uploadFileState = api.uploadFile()
+  const onFileUpload = ({ data: file }) => {
+    if (!isValidFile(file)) {
+      throw new Error('Invalid file returned from Server')
+    }
 
+    if (fileAlreadyExists(existingFilesList, file)) {
+      throw new Error('File returned from server already exists')
+    }
+
+    dispatch({
+      type: Actions.ADD_FILE,
+      payload: { file },
+    })
+  }
+
+  const { run: uploadFile, setError } = uploadFileState
+
+  // input props
   const { accept, maxFileSize, multiple, disabled } = props
-  const { onValidationError } = props
 
   // TODO validators could also be passed via prop and some middleware pattern.
   const validateFile = (file) => {
@@ -48,16 +64,14 @@ const FileUpload = (props) => {
     try {
       validateFile(file)
     } catch (error) {
-      if (onValidationError) {
-        onValidationError(error.message)
-      }
+      setError(error)
       return
     }
 
     const data = new FormData()
     data.append('file', file)
 
-    uploadFile(data)
+    uploadFile(data, { onResolve: onFileUpload })
   }
 
   const onOpenFileSelector = (event) => {
@@ -69,6 +83,8 @@ const FileUpload = (props) => {
 
     fileInput.current.click()
   }
+
+  const readOnlyUploadState = limitToReadOnlyAsyncState({ ...uploadFileState })
 
   return (
     <form>
@@ -82,8 +98,9 @@ const FileUpload = (props) => {
         required
       />
       {React.cloneElement(props.children, {
-        onClick: onOpenFileSelector,
-        disabled: isUploading,
+        openFileSelector: onOpenFileSelector,
+        uploadState: readOnlyUploadState,
+        disabled,
       })}
     </form>
   )
@@ -95,7 +112,6 @@ FileUpload.propTypes = {
   multiple: PropTypes.bool,
   disabled: PropTypes.bool,
   children: PropTypes.element.isRequired,
-  onValidationError: PropTypes.func,
 }
 
 FileUpload.defaultProps = {
