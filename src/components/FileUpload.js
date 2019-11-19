@@ -1,19 +1,17 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 
-import { useFilesDispatch, Actions, useFilesState } from '../store/FileStore'
+import { useFilesDispatch, Actions } from '../store/FileStore'
 import { useApiContext } from '../api/ApiContext'
-import {
-  isValidFile,
-  fileAlreadyExists,
-} from '../store/validators/FileValidator'
 
 import { limitToReadOnlyAsyncState } from '../utils/useAsyncStateShape'
+import ValidationError, {
+  ValidationErrorCodes,
+} from '../errors/ValidationError'
 
 const FileUpload = (props) => {
   // get dispatch from store
   const dispatch = useFilesDispatch()
-  const { files: existingFilesList } = useFilesState()
 
   const fileInput = useRef(undefined)
 
@@ -21,18 +19,24 @@ const FileUpload = (props) => {
   const api = useApiContext()
   const uploadFileState = api.uploadFile()
   const onFileUpload = ({ data: file }) => {
-    if (!isValidFile(file)) {
-      throw new Error('Invalid file returned from Server')
-    }
+    try {
+      dispatch({
+        type: Actions.ADD_FILE,
+        payload: { file },
+      })
+    } catch (error) {
+      // do not leak internal structure and errors to the user.
+      // there should be a map somewhere which resolves different
+      // error types to more generalized error messages.
+      if (
+        error instanceof ValidationError &&
+        error.code === ValidationErrorCodes.DUPLICATE_ENTRY
+      ) {
+        throw new Error('The file already exists.')
+      }
 
-    if (fileAlreadyExists(existingFilesList, file)) {
-      throw new Error('File returned from server already exists')
+      throw new Error('Something went wrong, please try again.')
     }
-
-    dispatch({
-      type: Actions.ADD_FILE,
-      payload: { file },
-    })
   }
 
   const { run: uploadFile, setError } = uploadFileState

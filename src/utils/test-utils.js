@@ -26,6 +26,10 @@ const WithFilesProvider = ({ children }) => {
   )
 }
 
+const WithApiProvider = ({ children }) => {
+  return <ApiProvider>{children}</ApiProvider>
+}
+
 const WithApiAndFilesProvider = ({ children }) => {
   return (
     <ApiProvider>
@@ -38,6 +42,10 @@ const renderWithFilesProviders = (ui, options) => {
   return render(ui, { wrapper: WithFilesProvider, ...options })
 }
 
+const renderWithApiProvider = (ui, options) => {
+  return render(ui, { wrapper: WithApiProvider, ...options })
+}
+
 const renderWithApiAndFileProviders = (ui, options) => {
   return render(ui, { wrapper: WithApiAndFilesProvider, ...options })
 }
@@ -46,4 +54,8 @@ const renderWithApiAndFileProviders = (ui, options) => {
 export * from '@testing-library/react'
 
 // override render method
-export { renderWithFilesProviders, renderWithApiAndFileProviders }
+export {
+  renderWithFilesProviders,
+  renderWithApiProvider,
+  renderWithApiAndFileProviders,
+}

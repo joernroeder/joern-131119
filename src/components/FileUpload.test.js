@@ -1,7 +1,13 @@
 import React from 'react'
-import { renderWithApiAndFileProviders, fireEvent, act } from 'test-utils'
+import {
+  renderWithApiAndFileProviders,
+  renderWithApiProvider,
+  fireEvent,
+  act,
+} from 'test-utils'
 
 import FileUpload from './FileUpload'
+import { FilesProvider } from '../store/FileStore'
 
 const uploadProps = {
   accept: ['image/jpeg'],
@@ -179,4 +185,104 @@ test('it should correctly send the file', async () => {
 
   expect(formData.getAll('file')).toHaveLength(1)
   expect(formData.get('file')).toBe(file)
+})
+
+test('it should correctly reject if the server response contains an invalid file object', async () => {
+  let testIsRejected = false
+  let testErrorMessage = undefined
+
+  const Button = ({ uploadState: { isRejected, error } }) => {
+    testIsRejected = isRejected
+    testErrorMessage = error ? error.message : undefined
+
+    return null
+  }
+
+  const { container } = renderWithApiAndFileProviders(
+    <FileUpload {...uploadProps}>
+      <Button />
+    </FileUpload>
+  )
+
+  const input = container.querySelector('input')
+  const file = new File(['dummy content'], 'example.png', {
+    type: 'image/jpeg',
+  })
+
+  fetch.mockResponseOnce(
+    JSON.stringify({
+      data: {
+        type: 'file',
+        id: 'no hash',
+        attributes: {
+          name: '1-bsSpf1dNMQ6NIotoSMQQrA<p>inject</p>',
+          size: 26492,
+        },
+      },
+    })
+  )
+
+  await act(async () => {
+    // @see https://github.com/testing-library/react-testing-library/issues/93#issuecomment-403887769
+    Object.defineProperty(input, 'files', {
+      value: [file],
+    })
+
+    fireEvent.change(input)
+  })
+
+  expect(testIsRejected).toBeTruthy()
+  expect(testErrorMessage).toEqual('Something went wrong, please try again.')
+})
+
+test('it should correctly reject if the server response contains file object already listed in the file store', async () => {
+  const duplicateFile = {
+    type: 'file',
+    id: '6fc6ff794b7101af013fa8ec300879d1ed245c3926619c1625753bf34ef8ccbd',
+    attributes: {
+      name: '1-bsSpf1dNMQ6NIotoSMQQrA<p>inject</p>',
+      size: 26492,
+    },
+  }
+
+  let testIsRejected = false
+  let testErrorMessage = undefined
+
+  const Button = ({ uploadState: { isRejected, error } }) => {
+    testIsRejected = isRejected
+    testErrorMessage = error ? error.message : undefined
+
+    return null
+  }
+
+  const { container } = renderWithApiProvider(
+    <FilesProvider state={{ files: [duplicateFile] }}>
+      <FileUpload {...uploadProps}>
+        <Button />
+      </FileUpload>
+    </FilesProvider>
+  )
+
+  const input = container.querySelector('input')
+  const file = new File(['dummy content'], 'example.png', {
+    type: 'image/jpeg',
+  })
+
+  fetch.mockResponseOnce(
+    JSON.stringify({
+      data: duplicateFile,
+    })
+  )
+
+  await act(async () => {
+    // @see https://github.com/testing-library/react-testing-library/issues/93#issuecomment-403887769
+    Object.defineProperty(input, 'files', {
+      value: [file],
+    })
+
+    fireEvent.change(input)
+  })
+
+  expect(testIsRejected).toBeTruthy()
+  expect(testErrorMessage).toEqual('The file already exists.')
 })
