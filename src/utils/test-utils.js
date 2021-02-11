@@ -2,6 +2,7 @@ import React from 'react'
 
 import '@testing-library/jest-dom/extend-expect'
 import 'jest-prop-type-error'
+import fetchMock from 'jest-fetch-mock'
 
 import { render } from '@testing-library/react'
 
@@ -9,12 +10,24 @@ import { FilesProvider } from '../store/FileStore'
 import { FilteredFilesProvider } from '../store/FilteredFileStore'
 import { ApiProvider } from '../api/ApiContext'
 
+// override fetch with mocked version
+global._actualFetch = global.fetch
+global.fetch = fetchMock
+
+afterEach(() => {
+  fetch.resetMocks()
+})
+
 const WithFilesProvider = ({ children }) => {
   return (
     <FilesProvider>
       <FilteredFilesProvider>{children}</FilteredFilesProvider>
     </FilesProvider>
   )
+}
+
+const WithApiProvider = ({ children }) => {
+  return <ApiProvider>{children}</ApiProvider>
 }
 
 const WithApiAndFilesProvider = ({ children }) => {
@@ -29,6 +42,10 @@ const renderWithFilesProviders = (ui, options) => {
   return render(ui, { wrapper: WithFilesProvider, ...options })
 }
 
+const renderWithApiProvider = (ui, options) => {
+  return render(ui, { wrapper: WithApiProvider, ...options })
+}
+
 const renderWithApiAndFileProviders = (ui, options) => {
   return render(ui, { wrapper: WithApiAndFilesProvider, ...options })
 }
@@ -37,4 +54,8 @@ const renderWithApiAndFileProviders = (ui, options) => {
 export * from '@testing-library/react'
 
 // override render method
-export { renderWithFilesProviders, renderWithApiAndFileProviders }
+export {
+  renderWithFilesProviders,
+  renderWithApiProvider,
+  renderWithApiAndFileProviders,
+}

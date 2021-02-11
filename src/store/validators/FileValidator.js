@@ -9,6 +9,10 @@ export const isValidFileId = (id) => {
 }
 
 export const isValidFileName = (name) => {
+  if (!name) {
+    return false
+  }
+
   if (validator.isDataURI(name)) {
     return false
   }
@@ -69,8 +73,8 @@ export const fileAlreadyExists = (list, file) => {
 
   // id already exists in in the list. returning...
   if (fileIndex !== -1) {
-    return false
+    return true
   }
 
-  return true
+  return false
 }

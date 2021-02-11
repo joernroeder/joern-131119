@@ -1,13 +1,24 @@
-import addCancelToken from '../helpers/addCancelToken'
+import { useAsync } from 'react-async'
 
-const deleteFile = (axios) => {
-  return async ({ withId: id, ...args }) => {
-    return await axios
-      .delete(`/files/${encodeURIComponent(id)}`, {
-        ...addCancelToken(args),
-      })
-      .then((res) => res.data.data)
+export default (apiOptions) => {
+  const { baseURL, headers } = apiOptions
+
+  const deleteFile = ([id, { onResolve, onReject }], props, options) => {
+    const { signal } = options
+
+    return fetch(`${baseURL}/files/${encodeURI(id)}`, {
+      method: 'DELETE',
+      headers,
+      signal,
+    })
+      .then(onResolve)
+      .catch(onReject)
+  }
+
+  return (options) => {
+    return useAsync({
+      ...options,
+      deferFn: deleteFile,
+    })
   }
 }
-
-export default deleteFile

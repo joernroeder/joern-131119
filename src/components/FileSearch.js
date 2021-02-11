@@ -6,25 +6,41 @@ import {
 } from '../store/FilteredFileStore'
 
 import useDebounce from '../hooks/useDebounce'
-import { useApiContext, ApiStatus } from '../api/ApiContext'
+import { useApiContext } from '../api/ApiContext'
 
 // TODO implement loading indicator and show errors
-const FileSearch = () => {
+const FileSearch = ({ className }) => {
   // debounced value
   const [value, setValue] = useState('')
   const debouncedValue = useDebounce(value, 100)
+  // stores value sent to the api
+  const [valueSent, setValueSent] = useState('')
 
   // get query and dispatch from filteredFiles State
   const { query } = useFilteredFilesState()
   const dispatch = useFilteredFilesDispatch()
 
   const api = useApiContext()
+  const { run, cancel } = api.fetchFilteredFiles({
+    defer: true,
+    onResolve: ({ data }) => {
+      dispatch({
+        type: Actions.SET_FILTER,
+        payload: {
+          query: valueSent, // <- use of valueSent
+          filteredFiles: data,
+        },
+      })
+    },
+  })
 
   useEffect(() => {
-    // no need to fetch, already up to date
-    if (debouncedValue === query) {
+    if (debouncedValue === valueSent) {
       return
     }
+
+    // cancel running requests.
+    cancel()
 
     // resetting query
     if (!debouncedValue && query) {
@@ -32,50 +48,23 @@ const FileSearch = () => {
       return
     }
 
-    const cancelToken = api.getCancelToken()
-    let isCanceled = false
-
-    api
-      .getFilteredFiles({ by: debouncedValue, cancelVia: cancelToken })
-      .then(({ query, data }) => {
-        if (isCanceled) {
-          return
-        }
-
-        dispatch({
-          type: Actions.SET_FILTER,
-          payload: {
-            query,
-            filteredFiles: data,
-          },
-        })
-      })
-      .catch((error) => {
-        if (isCanceled) {
-          return
-        }
-
-        console.error(error)
-      })
-
-    // cancel request on unmount
-    return () => {
-      cancelToken.cancel()
-      isCanceled = true
-    }
-  }, [api, debouncedValue, dispatch, query])
+    run((init) => {
+      return {
+        ...init,
+        resource: init.resource + encodeURIComponent(debouncedValue),
+      }
+    })
+    setValueSent(debouncedValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue, query])
 
   const onInputChange = (event) => {
     setValue(event.target.value)
     event.preventDefault()
   }
 
-  const onFormSubmit = (event) => {
-    event.preventDefault()
-  }
-
   return (
-    <form className="sm:order-1">
+    <form className={className}>
       <input
         type="search"
         className="border text-lg w-full px-4 py-1"

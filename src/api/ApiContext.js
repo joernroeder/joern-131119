@@ -1,45 +1,58 @@
 import React, { useContext } from 'react'
-import axios from 'axios'
+import PropTypes from 'prop-types'
 
-import getFiles from './modules/getFiles'
-import getFilteredFiles from './modules/getFilteredFiles'
+import { IfPending, IfFulfilled, IfRejected } from 'react-async'
+
+import fetchFiles from './modules/fetchFiles'
+import fetchFilteredFiles from './modules/fetchFilteredFiles'
 import uploadFile from './modules/uploadFile'
 import deleteFile from './modules/deleteFile'
 
-const modules = {
-  getFiles,
-  getFilteredFiles,
+const apiModules = {
+  fetchFiles,
+  fetchFilteredFiles,
   uploadFile,
   deleteFile,
 }
 
-const defaultAxiosConfig = {
-  baseURL: 'http://localhost:4000/',
+const defaultApiConfig = {
+  baseURL: 'http://localhost:4000',
+  headers: { Accept: 'application/json' },
   timeout: 1000,
-}
-
-const ApiStatus = {
-  LOADING: 'LOADING',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
 }
 
 const ApiContext = React.createContext(undefined)
 
-const ApiProvider = ({ children, axiosConfig }) => {
-  const config = Object.assign({}, defaultAxiosConfig, axiosConfig)
-  const axiosInstance = axios.create(config)
+const ApiProvider = ({
+  children,
+  apiConfig: apiConfigOptions,
+  endpoints: initialEndpoints,
+}) => {
+  const apiConfig = { ...defaultApiConfig, ...apiConfigOptions }
+  let endpoints = { ...initialEndpoints }
 
-  // inject axios instance into api modules
-  let endpoints = {
-    getCancelToken: () => axios.CancelToken.source(),
-  }
+  // add apiConfig to all apiModules
+  for (let [name, apiModule] of Object.entries(apiModules)) {
+    // skip endpoints which were already passed in via initialEndpoints
+    if (endpoints[name]) {
+      continue
+    }
 
-  for (let [name, apiModule] of Object.entries(modules)) {
-    endpoints[name] = apiModule(axiosInstance)
+    endpoints[name] = apiModule(apiConfig)
   }
 
   return <ApiContext.Provider value={endpoints}>{children}</ApiContext.Provider>
+}
+
+ApiProvider.propTypes = {
+  apiConfig: PropTypes.object,
+  endpoints: PropTypes.objectOf(PropTypes.func),
+  children: PropTypes.node.isRequired,
+}
+
+ApiProvider.defaultProps = {
+  apiConfig: {},
+  endpoints: {},
 }
 
 const useApiContext = () => {
@@ -51,4 +64,4 @@ const useApiContext = () => {
   return context
 }
 
-export { useApiContext, ApiProvider, ApiStatus }
+export { useApiContext, ApiProvider, IfPending, IfFulfilled, IfRejected }

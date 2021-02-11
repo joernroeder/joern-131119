@@ -1,8 +1,13 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 
 import { useFilesDispatch, Actions } from '../store/FileStore'
-import { useApiContext, ApiStatus } from '../api/ApiContext'
+import { useApiContext } from '../api/ApiContext'
+
+import { limitToReadOnlyAsyncState } from '../utils/useAsyncStateShape'
+import ValidationError, {
+  ValidationErrorCodes,
+} from '../errors/ValidationError'
 
 const FileUpload = (props) => {
   // get dispatch from store
@@ -12,43 +17,32 @@ const FileUpload = (props) => {
 
   // set up upload API
   const api = useApiContext()
-  const [status, setStatus] = useState(undefined)
-  const [cancelToken, _] = useState(api.getCancelToken())
-  let [isCanceled, setIsCanceled] = useState(false)
-
-  useEffect(() => {
-    return () => {
-      cancelToken.cancel()
-    }
-  }, [cancelToken])
-
-  const startFileUpload = useCallback(
-    (fileData) => {
-      if (!fileData) {
-        return
+  const uploadFileState = api.uploadFile()
+  const onFileUpload = ({ data: file }) => {
+    try {
+      dispatch({
+        type: Actions.ADD_FILE,
+        payload: { file },
+      })
+    } catch (error) {
+      // do not leak internal structure and errors to the user.
+      // there should be a map somewhere which resolves different
+      // error types to more generalized error messages.
+      if (
+        error instanceof ValidationError &&
+        error.code === ValidationErrorCodes.DUPLICATE_ENTRY
+      ) {
+        throw new Error('The file already exists.')
       }
 
-      setStatus(ApiStatus.LOADING)
+      throw new Error('Something went wrong, please try again.')
+    }
+  }
 
-      api
-        .uploadFile({ with: fileData, cancelVia: cancelToken })
-        .then((file) => {
-          console.log(file)
-          dispatch({
-            type: Actions.ADD_FILE,
-            payload: { file },
-          })
-          setStatus(ApiStatus.SUCCESS)
-        })
-        .catch(() => {
-          setStatus(ApiStatus.ERROR)
-        })
-    },
-    [api, cancelToken, dispatch]
-  )
+  const { run: uploadFile, setError } = uploadFileState
 
+  // input props
   const { accept, maxFileSize, multiple, disabled } = props
-  const { onValidationError } = props
 
   // TODO validators could also be passed via prop and some middleware pattern.
   const validateFile = (file) => {
@@ -74,16 +68,14 @@ const FileUpload = (props) => {
     try {
       validateFile(file)
     } catch (error) {
-      if (onValidationError) {
-        onValidationError(error.message)
-      }
+      setError(error)
       return
     }
 
     const data = new FormData()
     data.append('file', file)
 
-    startFileUpload(data)
+    uploadFile(data, { onResolve: onFileUpload })
   }
 
   const onOpenFileSelector = (event) => {
@@ -95,6 +87,8 @@ const FileUpload = (props) => {
 
     fileInput.current.click()
   }
+
+  const readOnlyUploadState = limitToReadOnlyAsyncState({ ...uploadFileState })
 
   return (
     <form>
@@ -108,8 +102,9 @@ const FileUpload = (props) => {
         required
       />
       {React.cloneElement(props.children, {
-        onClick: onOpenFileSelector,
-        disabled: status === ApiStatus.LOADING,
+        openFileSelector: onOpenFileSelector,
+        uploadState: readOnlyUploadState,
+        disabled,
       })}
     </form>
   )
@@ -121,7 +116,6 @@ FileUpload.propTypes = {
   multiple: PropTypes.bool,
   disabled: PropTypes.bool,
   children: PropTypes.element.isRequired,
-  onValidationError: PropTypes.func,
 }
 
 FileUpload.defaultProps = {
